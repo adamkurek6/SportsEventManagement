@@ -1,0 +1,76 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+#searchResults {
+    position: absolute;
+    z-index: 1000;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+    #searchResults a {
+        padding: 10px;
+        text-decoration: none;
+        color: #000;
+        display: block;
+    }
+
+        #searchResults a:hover {
+            background-color: #f0f0f0;
+        }
+
+
+.navbar .dropdown-menu {
+    min-width: 200px;
+}
+
+.navbar .dropdown-item.text-danger {
+    color: #dc3545;
+}
+
+    .navbar .dropdown-item.text-danger:hover {
+        background-color: #f8d7da;
+    }
+
+.main-page {
+    text-align: center;
+    padding: 50px;
+    background: #001F3F;
+    color: #fff;
+}
+
+    .main-page .btn-primary {
+        background-color: #007BFF;
+        border: none;
+        color: #fff;
+    }
+
+    .main-page .btn-secondary {
+        background-color: #6C757D;
+        border: none;
+        color: #fff;
+    }

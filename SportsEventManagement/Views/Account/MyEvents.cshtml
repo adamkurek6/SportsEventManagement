@@ -1,0 +1,190 @@
+﻿@model List<SportsEventManagement.ViewModels.MyEventViewModel>
+
+<div class="my-events-container">
+    <h1 class="text-center text-primary">Moje wydarzenia</h1>
+
+    <!-- Wyświetlanie komunikatów -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger mt-3">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success mt-3">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <!-- Sekcja aktywnych wydarzeń -->
+    <h2 class="section-header">Aktywne wydarzenia</h2>
+    @if (ViewBag.ActiveEvents != null && ((List<SportsEventManagement.ViewModels.MyEventViewModel>)ViewBag.ActiveEvents).Any())
+    {
+        <table class="table table-hover mt-3">
+            <thead>
+                <tr class="custom-table-header">
+                    <th>Nazwa wydarzenia</th>
+                    <th>Data</th>
+                    <th>Typ uczestnictwa</th>
+                    <th class="text-center">Akcje</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ev in (List<SportsEventManagement.ViewModels.MyEventViewModel>)ViewBag.ActiveEvents)
+                {
+                    <tr>
+                        <td>@ev.EventName</td>
+                        <td>@ev.EventDate.ToString("dd-MM-yyyy")</td>
+                        <td>@ev.ParticipationType</td>
+                        <td class="text-center">
+                            @if (ev.ParticipationType == "Indywidualne")
+                            {
+                                <a asp-action="Details" asp-controller="Home" asp-route-id="@ev.EventId" class="btn btn-info mb-2">Szczegóły</a>
+                                <form method="post" asp-action="LeaveEvent" asp-route-eventId="@ev.EventId" style="display: inline;">
+                                    <button type="submit" class="btn btn-danger mb-2" onclick="return confirm('Czy na pewno chcesz opuścić to wydarzenie?');">
+                                        Opuść
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <a asp-action="DetailsTeam" asp-controller="Home" asp-route-id="@ev.EventId" class="btn btn-info mb-2">Szczegóły</a>
+                                @if (ev.IsCaptain)
+                                {
+                                    <form method="post" asp-action="ResolveTeam" asp-route-teamId="@ev.TeamId" style="display: inline;">
+                                        <button type="submit" class="btn btn-danger mb-2" onclick="return confirm('Czy na pewno chcesz rozwiązać tę drużynę?');">
+                                            Rozwiąż drużynę
+                                        </button>
+                                    </form>
+                                    <a asp-action="ManageTeam" asp-route-teamId="@ev.TeamId" class="btn btn-secondary mb-2">Zarządzaj drużyną</a>
+
+                                    <!-- Zaproszenie do drużyny -->
+                                    @if (ev.CurrentMembers < ev.TeamCapacity)
+                                    {
+                                        <form method="post" asp-action="InvitePlayer" asp-controller="Account" class="d-inline">
+                                            <input type="hidden" name="teamId" value="@ev.TeamId" />
+                                            <div class="form-group d-inline">
+                                                <input type="email" name="email" class="form-control d-inline" placeholder="Adres e-mail" style="width: 200px;" required />
+                                            </div>
+                                            <button type="submit" class="btn btn-primary mb-2">Zaproś do drużyny</button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Drużyna osiągnęła maksymalną liczbę członków.</span>
+                                    }
+                                }
+                                else
+                                {
+                                    <form method="post" asp-action="LeaveTeam" asp-route-teamId="@ev.TeamId" style="display: inline;">
+                                        <button type="submit" class="btn btn-warning mb-2" onclick="return confirm('Czy na pewno chcesz opuścić tę drużynę?');">
+                                            Opuść drużynę
+                                        </button>
+                                    </form>
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p class="text-muted">Brak aktywnych wydarzeń.</p>
+    }
+
+    <!-- Sekcja zarchiwizowanych wydarzeń -->
+    <h2 class="section-header mt-5">Zarchiwizowane wydarzenia</h2>
+    @if (ViewBag.ArchivedEvents != null && ((List<SportsEventManagement.ViewModels.MyEventViewModel>)ViewBag.ArchivedEvents).Any())
+    {
+        <table class="table table-hover mt-3">
+            <thead>
+                <tr class="custom-table-header">
+                    <th>Nazwa wydarzenia</th>
+                    <th>Data</th>
+                    <th>Typ uczestnictwa</th>
+                    <th class="text-center">Akcje</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ev in (List<SportsEventManagement.ViewModels.MyEventViewModel>)ViewBag.ArchivedEvents)
+                {
+                    <tr>
+                        <td>@ev.EventName</td>
+                        <td>@ev.EventDate.ToString("dd-MM-yyyy")</td>
+                        <td>@ev.ParticipationType</td>
+                        <td class="text-center">
+                            @if (ev.ParticipationType == "Indywidualne")
+                            {
+                                <a asp-action="Details" asp-controller="Home" asp-route-id="@ev.EventId" class="btn btn-info">Szczegóły</a>
+                            }
+                            else
+                            {
+                                <a asp-action="DetailsTeam" asp-controller="Home" asp-route-id="@ev.EventId" class="btn btn-info">Szczegóły</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p class="text-muted">Brak zarchiwizowanych wydarzeń.</p>
+    }
+</div>
+
+
+<style>
+    .my-events-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-header {
+        color: #0056b3;
+        font-weight: bold;
+    }
+
+    .custom-table-header {
+        background-color: #003366;
+        color: white;
+        font-weight: bold;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .btn-info {
+        background-color: #17a2b8;
+        border-color: #17a2b8;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+
+    .btn-warning {
+        background-color: #ffc107;
+        border-color: #ffc107;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        color: white;
+    }
+</style>

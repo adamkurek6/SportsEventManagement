@@ -1,0 +1,113 @@
+﻿@model SportsEventManagement.ViewModels.ManageTeamViewModel
+
+<div class="manage-team-container">
+    <h1 class="text-center text-primary">Zarządzanie drużyną</h1>
+
+    <!-- Wyświetlanie komunikatów -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger mt-3">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success mt-3">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <!-- Tabela członków drużyny -->
+    <table class="table table-hover mt-4">
+        <thead>
+            <tr class="custom-table-header">
+                <th>Imię i nazwisko</th>
+                <th>Email</th>
+                <th class="text-center">Akcje</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var member in Model.TeamMembers)
+            {
+                <tr>
+                    <td>@member.Name</td>
+                    <td>@member.Email</td>
+                    <td class="text-center">
+                        @if (member.Id != Model.CaptainId)
+                        {
+                            <form method="post" asp-action="RemoveTeamMember" style="display: inline;">
+                                <input type="hidden" name="teamId" value="@Model.TeamId" />
+                                <input type="hidden" name="memberId" value="@member.Id" />
+                                <button type="submit" class="btn btn-danger mb-2" onclick="return confirm('Czy na pewno chcesz usunąć tego członka drużyny?');">
+                                    Usuń
+                                </button>
+                            </form>
+                            <form method="post" asp-action="TransferCaptainRole" style="display: inline;">
+                                <input type="hidden" name="teamId" value="@Model.TeamId" />
+                                <input type="hidden" name="newCaptainId" value="@member.Id" />
+                                <button type="submit" class="btn btn-primary mb-2" onclick="return confirm('Czy na pewno chcesz przekazać rolę kapitana temu użytkownikowi?');">
+                                    Przekaż kapitana
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Kapitan</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Przycisk powrotu -->
+    <div class="text-center mt-4">
+        <a asp-action="MyEvents" class="btn btn-secondary btn-lg">Powrót do moich wydarzeń</a>
+    </div>
+</div>
+
+<style>
+    .manage-team-container {
+        margin: 20px;
+        padding: 30px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .custom-table-header {
+        background-color: #003366;
+        color: #ffffff;
+        text-align: center;
+    }
+
+    .btn {
+        min-width: 120px;
+    }
+
+    .btn-danger {
+        background-color: #d9534f;
+        border-color: #d43f3a;
+    }
+
+        .btn-danger:hover {
+            background-color: #c9302c;
+            border-color: #ac2925;
+        }
+
+    .btn-primary {
+        background-color: #0275d8;
+        border-color: #025aa5;
+    }
+
+        .btn-primary:hover {
+            background-color: #025aa5;
+            border-color: #014682;
+        }
+
+    .badge.bg-secondary {
+        font-size: 1rem;
+        padding: 0.5em 1em;
+    }
+</style>

@@ -1,0 +1,88 @@
+﻿@model List<SportsEventManagement.ViewModels.TeamInvitationViewModel>
+
+<div class="team-invitations-container">
+    <h1 class="text-center text-primary">Zaproszenia do drużyny</h1>
+
+    <!-- Wyświetlanie komunikatów -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger mt-3">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success mt-3">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <table class="table table-hover mt-4">
+        <thead>
+            <tr class="custom-table-header">
+                <th>Drużyna</th>
+                <th>Wydarzenie</th>
+                <th>Email zapraszającego</th>
+                <th class="text-center">Akcje</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var invitation in Model)
+            {
+                <tr>
+                    <td>@invitation.TeamName</td>
+                    <td>@invitation.EventName</td>
+                    <td>@invitation.InvitedByEmail</td>
+                    <td class="text-center">
+                        <form method="post" asp-action="RespondToInvitation" asp-route-invitationId="@invitation.InvitationId" asp-route-accept="true" class="d-inline">
+                            <button type="submit" class="btn btn-success mb-1">Akceptuj</button>
+                        </form>
+                        <form method="post" asp-action="RespondToInvitation" asp-route-invitationId="@invitation.InvitationId" asp-route-accept="false" class="d-inline">
+                            <button type="submit" class="btn btn-danger">Odrzuć</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .team-invitations-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .table {
+        border: 1px solid #dee2e6;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .custom-table-header {
+        background-color: #003366;
+        color: white;
+        font-weight: bold;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+</style>

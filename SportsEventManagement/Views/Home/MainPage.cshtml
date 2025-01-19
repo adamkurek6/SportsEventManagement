@@ -1,0 +1,80 @@
+﻿@{
+    ViewData["Title"] = "Strona główna";
+}
+
+<div class="main-page text-center">
+    <div class="content">
+        <h1>Wynieś swoje zawody na następny poziom</h1>
+        <p>Pozbądź się kłopotów z organizacją amatorskich zawodów sportowych dzięki szybkim i łatwym narzędziom online!</p>
+        <div class="buttons">
+            <a asp-controller="Home" asp-action="CurrentEvents" class="btn btn-primary">
+                <i class="fas fa-calendar-alt"></i> Sprawdź nadchodzące zawody
+            </a>
+        </div>
+        <div class="description mt-4">
+            <p>
+                ArenaZawodów to platforma stworzona z myślą o pasjonatach sportu i organizatorach amatorskich zawodów sportowych.
+                Dzięki niej możesz przeglądać nadchodzące wydarzenia, dołączać do drużyn, rejestrować się na zawody indywidualne lub drużynowe oraz zarządzać swoimi uczestnictwami.
+                Dołącz do naszej społeczności, twórz własne wydarzenia i bierz udział w emocjonujących rywalizacjach sportowych!
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #001f3f;
+        color: #f5f5f5;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .main-page {
+        padding: 100px 20px;
+        background-color: #001f3f;
+        color: white;
+    }
+
+        .main-page .content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .main-page h1 {
+            font-size: 2.5rem;
+            color: #ffd700;
+        }
+
+        .main-page p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+
+        .main-page .buttons {
+            margin-top: 20px;
+        }
+
+        .main-page .btn {
+            margin: 10px;
+            background-color: #007bff;
+            border-color: #0056b3;
+            color: white;
+        }
+
+            .main-page .btn:hover {
+                background-color: #0056b3;
+                border-color: #003f7f;
+            }
+
+        .main-page .description {
+            font-size: 1rem;
+            color: #f5f5f5;
+            text-align: center;
+        }
+
+            .main-page .description p {
+                margin: 0;
+                line-height: 1.5;
+            }
+</style>

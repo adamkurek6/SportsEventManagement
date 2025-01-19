@@ -1,0 +1,149 @@
+﻿@model SportsEventManagement.ViewModels.HostIndexViewModel
+
+<div class="host-container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary">Aktywne Wydarzenia</h2>
+        <a class="btn btn-success" asp-action="CreateEvent">Dodaj Wydarzenie</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark text-center">
+                <tr>
+                    <th>Nazwa</th>
+                    <th>Dyscyplina</th>
+                    <th>Data</th>
+                    <th>Lokalizacja</th>
+                    <th>Status Rejestracji</th>
+                    <th>Opcje</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.ActiveEvents)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@item.Discipline</td>
+                        <td>@item.Date.ToString("dd.MM.yyyy HH:mm")</td>
+                        <td>@item.Location</td>
+                        <td>@item.RegistrationStatus</td>
+                        <td class="text-center">
+                            <a class="btn btn-outline-primary btn-sm me-1" asp-action="Edit" asp-route-id="@item.Id">
+                                <i class="bi bi-pencil-square"></i> Edytuj
+                            </a>
+                            <form asp-action="DeleteEvent" asp-route-id="@item.Id" method="post" class="d-inline" onsubmit="return confirm('Czy na pewno chcesz usunąć wydarzenie o nazwie @item.Name?');">
+                                <button type="submit" class="btn btn-outline-danger btn-sm me-1">
+                                    <i class="bi bi-trash"></i> Usuń
+                                </button>
+                            </form>
+                            <form asp-action="MarkAsUnused" asp-route-id="@item.Id" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-outline-warning btn-sm">
+                                    <i class="bi bi-exclamation-circle"></i> Nieużywane
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <h2 class="text-primary mt-5">Nieużywane Wydarzenia</h2>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark text-center">
+                <tr>
+                    <th>Nazwa</th>
+                    <th>Dyscyplina</th>
+                    <th>Data</th>
+                    <th>Lokalizacja</th>
+                    <th>Status Rejestracji</th>
+                    <th>Opcje</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.InactiveEvents)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@item.Discipline</td>
+                        <td>@item.Date.ToString("dd.MM.yyyy HH:mm")</td>
+                        <td>@item.Location</td>
+                        <td>@item.RegistrationStatus</td>
+                        <td class="text-center">
+                            <form asp-action="MarkAsActive" asp-route-id="@item.Id" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-outline-success btn-sm">
+                                    <i class="bi bi-arrow-repeat"></i> Aktywne
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    .host-container {
+        margin: 20px;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .text-primary {
+        color: #0056b3;
+    }
+
+    .table-dark {
+        background-color: #343a40;
+        color: white;
+    }
+
+    .btn-outline-primary {
+        border-color: #0056b3;
+        color: #0056b3;
+    }
+
+        .btn-outline-primary:hover {
+            background-color: #0056b3;
+            color: white;
+        }
+
+    .btn-outline-danger {
+        border-color: #dc3545;
+        color: #dc3545;
+    }
+
+        .btn-outline-danger:hover {
+            background-color: #dc3545;
+            color: white;
+        }
+
+    .btn-outline-warning {
+        border-color: #ffc107;
+        color: #ffc107;
+    }
+
+        .btn-outline-warning:hover {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+    .btn-outline-success {
+        border-color: #28a745;
+        color: #28a745;
+    }
+
+        .btn-outline-success:hover {
+            background-color: #28a745;
+            color: white;
+        }
+
+    .btn-sm {
+        font-size: 0.85rem;
+        padding: 0.25rem 0.5rem;
+    }
+</style>

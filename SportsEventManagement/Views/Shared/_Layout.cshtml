@@ -1,0 +1,174 @@
+﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <link rel="icon" type="image/x-icon" href="~/images/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="~/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="~/images/favicon-32x32.png">
+    <link rel="manifest" href="~/images/site.webmanifest">
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ArenaZawodów</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/SportsEventManagement.styles.css" asp-append-version="true" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        .navbar {
+            background-color: #00274d;
+        }
+
+            .navbar .nav-link,
+            .navbar .navbar-brand,
+            .navbar .dropdown-item {
+                color: #ffffff !important;
+            }
+
+                .navbar .nav-link:hover,
+                .navbar .dropdown-item:hover {
+                    color: #00274d !important;
+                    background-color: #e8e8e8 !important;
+                }
+
+        .dropdown-menu {
+            background-color: #003366;
+        }
+
+        .dropdown-item {
+            color: #ffffff !important;
+        }
+
+            .dropdown-item:hover {
+                background-color: #e8e8e8 !important;
+                color: #00274d !important;
+            }
+
+        .navbar-toggler {
+            border-color: #ffffff;
+        }
+
+        .navbar-toggler-icon {
+            background-color: #ffffff;
+        }
+
+        body {
+            background-color: #f0f2f5;
+        }
+
+        .badge.bg-danger {
+            font-size: 0.8rem;
+            color: #ffffff;
+        }
+    </style>
+
+
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="MainPage">ArenaZawodów</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Przełącz nawigację">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="CurrentEvents">Nadchodzące Zawody</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav">
+                        @if (HttpContextAccessor.HttpContext.Session.GetString("UserFullName") != null)
+                        {
+                            @if (HttpContextAccessor.HttpContext.Session.GetString("AccountType") == "Host")
+                            {
+                                <li class="nav-item">
+                                    <a asp-controller="Host" asp-action="Index" class="nav-link">Panel Gospodarza</a>
+                                </li>
+                            }
+                            <li class="nav-item">
+                                <a asp-controller="Notifications" asp-action="Index" class="nav-link position-relative">
+                                    <i class="fa fa-bell"></i>
+                                    <span id="notificationBadge" class="badge bg-danger position-absolute top-0 start-100 translate-middle" style="display: none;"></span>
+                                </a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user"></i> @HttpContextAccessor.HttpContext.Session.GetString("UserFullName")
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                                    <li>
+                                        <a asp-controller="Account" asp-action="MyEvents" class="dropdown-item">Moje wydarzenia</a>
+                                    </li>
+                                    <li>
+                                        <a asp-action="TeamInvitations" asp-controller="Home" class="dropdown-item">Moje zaproszenia</a>
+                                    </li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item text-danger" asp-controller="Account" asp-action="Logout">Wyloguj się</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="Login">Zaloguj się</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="Register">Zarejestruj się</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Wyświetlenie komunikatu z TempData -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        function updateNotificationCount() {
+            fetch('/Notifications/GetUnreadCount')
+                .then(response => response.json())
+                .then(data => {
+                    const notificationBadge = document.getElementById('notificationBadge');
+                    if (data.unreadCount > 0) {
+                        notificationBadge.textContent = data.unreadCount;
+                        notificationBadge.style.display = 'inline';
+                    } else {
+                        notificationBadge.style.display = 'none';
+                    }
+                })
+                .catch(error => console.error('Error fetching notification count:', error));
+        }
+
+        setInterval(updateNotificationCount, 30000);
+
+        updateNotificationCount();
+    </script>
+</body>
+</html>

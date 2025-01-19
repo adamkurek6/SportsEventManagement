@@ -1,0 +1,201 @@
+﻿@model SportsEventManagement.ViewModels.EventEditViewModel
+@using SportsEventManagement.ViewModels
+
+<div class="edit-event-container">
+    <h2 class="text-center text-primary">Edytuj Wydarzenie</h2>
+
+    <form asp-action="Edit" method="post" class="mt-4">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label asp-for="Name" class="form-label">Nazwa wydarzenia</label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="Discipline" class="form-label">Dyscyplina</label>
+                <input asp-for="Discipline" class="form-control" />
+                <span asp-validation-for="Discipline" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label asp-for="Location" class="form-label">Lokalizacja</label>
+                <input asp-for="Location" class="form-control" />
+                <span asp-validation-for="Location" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="Date" class="form-label">Data wydarzenia</label>
+                @if (!Model.IsEventDateEditable)
+                {
+                    <input asp-for="Date" class="form-control" type="datetime-local" readonly />
+                    <span class="text-muted">Nie można edytować, ponieważ wydarzenie już się odbyło.</span>
+                }
+                else
+                {
+                    <input asp-for="Date" class="form-control" type="datetime-local" />
+                }
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label asp-for="Description" class="form-label">Opis</label>
+            <textarea asp-for="Description" class="form-control"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label asp-for="RegistrationStart" class="form-label">Data rozpoczęcia rejestracji</label>
+                @if (!Model.IsRegistrationStartEditable)
+                {
+                    <input asp-for="RegistrationStart" class="form-control" type="datetime-local" readonly />
+                    <span class="text-muted">Nie można edytować, ponieważ data rozpoczęcia rejestracji już minęła.</span>
+                }
+                else
+                {
+                    <input asp-for="RegistrationStart" class="form-control" type="datetime-local" />
+                }
+                <span asp-validation-for="RegistrationStart" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="RegistrationEnd" class="form-label">Data zakończenia rejestracji</label>
+                @if (!Model.IsRegistrationEndEditable)
+                {
+                    <input asp-for="RegistrationEnd" class="form-control" type="datetime-local" readonly />
+                    <span class="text-muted">Nie można edytować, ponieważ rejestracja już się zakończyła.</span>
+                }
+                else
+                {
+                    <input asp-for="RegistrationEnd" class="form-control" type="datetime-local" />
+                }
+                <span asp-validation-for="RegistrationEnd" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label asp-for="ParticipationType" class="form-label">Typ zawodów</label>
+                @if (!Model.IsRegistrationStartEditable)
+                {
+                    <select asp-for="ParticipationType" class="form-select" disabled>
+                        @if (Model.ParticipationType == "Individual")
+                        {
+                            <option value="Individual" selected>Indywidualnie</option>
+                            <option value="Team">Drużyna</option>
+                        }
+                        else
+                        {
+                            <option value="Individual">Indywidualnie</option>
+                            <option value="Team" selected>Drużyna</option>
+                        }
+                    </select>
+                    <input type="hidden" asp-for="ParticipationType" />
+                }
+                else
+                {
+                    <select asp-for="ParticipationType" class="form-select">
+                        @if (Model.ParticipationType == "Individual")
+                        {
+                            <option value="Individual" selected>Indywidualnie</option>
+                            <option value="Team">Drużyna</option>
+                        }
+                        else
+                        {
+                            <option value="Individual">Indywidualnie</option>
+                            <option value="Team" selected>Drużyna</option>
+                        }
+                    </select>
+                }
+                <span asp-validation-for="ParticipationType" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="Capacity" class="form-label">Maksymalna liczba miejsc</label>
+                @if (Model.IsRegistrationClosed)
+                {
+                    <input asp-for="Capacity" class="form-control" type="number" readonly />
+                }
+                else
+                {
+                    <input asp-for="Capacity" class="form-control" type="number" />
+                }
+                <span asp-validation-for="Capacity" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label asp-for="TeamSize" class="form-label">Liczba osób w drużynie</label>
+            @if (!Model.IsRegistrationStartEditable)
+            {
+                <input asp-for="TeamSize" class="form-control" readonly />
+            }
+            else
+            {
+                <input asp-for="TeamSize" class="form-control" />
+            }
+            <span asp-validation-for="TeamSize" class="text-danger"></span>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <button type="submit" class="btn btn-primary w-50 me-2">Zapisz zmiany</button>
+            <a asp-action="Index" class="btn btn-secondary w-50 ms-2 text-dark">Anuluj</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const participationType = document.getElementById("participationType");
+        const teamSizeInput = document.getElementById("teamSizeInput");
+
+        function toggleTeamSizeInput() {
+            if (participationType.value === "Individual") {
+                teamSizeInput.value = 1;
+                teamSizeInput.disabled = true;
+            } else {
+                teamSizeInput.disabled = false;
+            }
+        }
+
+        toggleTeamSizeInput();
+        participationType.addEventListener("change", toggleTeamSizeInput);
+    });
+</script>
+
+<style>
+    .edit-event-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        border-radius: 10px;
+        padding: 30px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-label {
+        font-weight: bold;
+        color: #0056b3;
+    }
+
+    .btn-primary {
+        background-color: #0056b3;
+        border-color: #004085;
+    }
+
+        .btn-primary:hover {
+            background-color: #004085;
+        }
+
+    .btn-secondary {
+        background-color: #f8f9fa;
+        border-color: #ced4da;
+        color: black;
+    }
+</style>

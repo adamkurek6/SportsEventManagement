@@ -1,0 +1,137 @@
+﻿@model IEnumerable<SportsEventManagement.ViewModels.EventViewModel>
+
+<div class="event-container">
+    <!-- Zakładki -->
+    <ul class="nav nav-tabs mb-4 justify-content-center">
+        <li class="nav-item">
+            <a class="nav-link @(ViewData["ActiveTab"] == "CurrentEvents" ? "active" : "")" asp-action="CurrentEvents">
+                Nadchodzące zawody
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(ViewData["ActiveTab"] == "ArchivedEvents" ? "active" : "")" asp-action="ArchivedEvents">
+                Zawody archiwalne
+            </a>
+        </li>
+    </ul>
+
+    <!-- Formularz filtrowania -->
+    <div class="filter-form-container">
+        <form method="get" asp-action="@ViewData["ActiveTab"]">
+            <div class="input-group">
+                <input id="disciplineFilter" type="text" name="disciplineFilter" value="@ViewBag.DisciplineFilter"
+                       class="form-control" placeholder="Wpisz dyscyplinę">
+                <button type="submit" class="btn btn-primary">Filtruj</button>
+                <a asp-action="@ViewData["ActiveTab"]" class="btn btn-secondary">Usuń filtr</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Lista zawodów -->
+    <div class="row g-4">
+        @foreach (var ev in Model)
+        {
+            <div class="col-md-6">
+                <div class="card shadow-sm border-3 border-secondary">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">@ev.Name</h5>
+                        <p class="card-text">
+                            <strong>Dyscyplina:</strong> @ev.Discipline<br />
+                            <strong>Data:</strong> @ev.Date.ToString("dd.MM.yyyy HH:mm")<br />
+                            <strong>Lokalizacja:</strong> @ev.Location<br />
+                            <strong>Status rejestracji:</strong>
+                            <span class="badge registration-status @(ev.RegistrationStatus.Contains("Start rejestracji") ? "bg-warning text-dark" : ev.RegistrationStatus.Contains("Koniec rejestracji") ? "bg-success" : "bg-danger")">
+                                @ev.RegistrationStatus
+                            </span>
+                        </p>
+                        <a asp-action="DetailsRedirect" asp-route-id="@ev.Id" class="btn btn-primary">Szczegóły</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('disciplineSearch');
+        const resultsContainer = document.getElementById('searchResults');
+
+        searchInput.addEventListener('input', function () {
+            const query = searchInput.value.trim();
+
+            if (query.length >= 0) {
+                fetch(`/Home/SearchDisciplines?term=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        resultsContainer.innerHTML = '';
+
+                        data.forEach(item => {
+                            const option = document.createElement('a');
+                            option.href = `?disciplineId=${item.id}`;
+                            option.className = 'list-group-item list-group-item-action';
+                            option.textContent = item.name;
+
+                            resultsContainer.appendChild(option);
+                        });
+                    });
+            } else {
+                resultsContainer.innerHTML = '';
+            }
+        });
+    });
+</script>
+
+<style>
+    .event-container {
+        margin: 20px auto;
+        max-width: 1000px;
+    }
+
+    .nav-tabs .nav-link {
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+
+        .nav-tabs .nav-link.active {
+            background-color: #0056b3;
+            color: white;
+        }
+
+    .filter-form-container {
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+        .filter-form-container .input-group {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+    .card {
+        border-radius: 8px;
+        background-color: #f8f9fa;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-title {
+        font-weight: bold;
+    }
+
+    .badge {
+        padding: 0.5em 0.75em;
+        font-size: 0.9em;
+    }
+
+    .registration-status.bg-warning {
+        background-color: #ffc107;
+    }
+
+    .registration-status.bg-success {
+        background-color: #28a745;
+    }
+
+    .registration-status.bg-danger {
+        background-color: #dc3545;
+    }
+</style>

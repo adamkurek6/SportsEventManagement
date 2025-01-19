@@ -1,0 +1,82 @@
+﻿@model IEnumerable<SportsEventManagement.Models.Notification>
+
+<div class="notifications-container">
+    <h1 class="text-center text-primary">Powiadomienia</h1>
+
+    @if (!Model.Any())
+    {
+        <p class="text-center text-muted mt-4">Nie masz nowych powiadomień.</p>
+    }
+    else
+    {
+        <div class="table-responsive mt-4">
+            <table class="table table-striped table-hover align-middle text-center">
+                <thead class="table-primary">
+                    <tr>
+                        <th scope="col">Treść</th>
+                        <th scope="col">Data</th>
+                        <th scope="col">Akcje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var notification in Model)
+                    {
+                        <tr class="@(notification.IsRead ? "" : "table-warning")">
+                            <td>@notification.Message</td>
+                            <td>@notification.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                            <td>
+                                <!-- Formularz oznaczania jako przeczytane -->
+                                <form method="post" asp-action="MarkAsRead" asp-route-id="@notification.Id" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-success">Oznacz jako przeczytane</button>
+                                </form>
+
+                                <!-- Formularz usuwania powiadomienia -->
+                                <form method="post" asp-action="DeleteNotification" asp-route-id="@notification.Id" class="d-inline" onsubmit="return confirm('Czy na pewno chcesz usunąć to powiadomienie?');">
+                                    <button type="submit" class="btn btn-sm btn-danger">Usuń</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<style>
+    .notifications-container {
+        margin: 20px;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .text-primary {
+        color: #0056b3;
+    }
+
+    .table-warning {
+        background-color: #fff3cd !important;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+
+    .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+</style>

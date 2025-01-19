@@ -1,0 +1,201 @@
+﻿@model SportsEventManagement.ViewModels.EventDetailsViewModel
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+<div class="event-details-container">
+    <h1 class="event-title text-center">@Model.Name</h1>
+    <h4 class="event-subtitle text-center">@Model.Discipline</h4>
+
+    <!-- Komunikaty -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger text-center mt-3">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success text-center mt-3">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <!-- Sekcja przycisków -->
+    <div class="registration-options text-center my-4 d-flex flex-column align-items-center">
+        @if (DateTime.Now >= Model.RegistrationStart && DateTime.Now <= Model.RegistrationEnd)
+        {
+            @if (Model.RegisteredParticipants < Model.MaxParticipants)
+            {
+                <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#registerTeamModal">
+                    Zapisz drużynę na wydarzenie
+                </button>
+            }
+            else
+            {
+                <p class="text-muted mb-3">Brak wolnych miejsc na to wydarzenie.</p>
+            }
+        }
+        else
+        {
+            <p class="text-muted mb-3">Rejestracja zamknięta.</p>
+        }
+        <a asp-action="TeamParticipants" asp-route-eventId="@Model.Id" class="btn btn-outline-primary">
+            Pokaż drużyny
+        </a>
+    </div>
+
+
+
+
+
+
+
+    <!-- Informacje o wydarzeniu -->
+    <div class="container mt-4">
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="info-box">
+                    <div class="info-header">Data zawodów</div>
+                    <div class="info-body">
+                        <p>@Model.Date.ToString("dddd, dd MMMM yyyy")</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="info-box">
+                    <div class="info-header">Miejsce</div>
+                    <div class="info-body">
+                        <p><strong>@Model.Location</strong></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="info-box">
+                    <div class="info-header">Termin rejestracji</div>
+                    <div class="info-body">
+                        <p><strong>@Model.RegistrationStart.ToString("dd.MM.yyyy") - @Model.RegistrationEnd.ToString("dd.MM.yyyy")</strong></p>
+                        <p class="text-muted"><strong>@Model.RegistrationStatus</strong></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="info-box">
+                    <div class="info-header">Dane kontaktowe</div>
+                    <div class="info-body">
+                        <p><strong>@Model.ContactEmail</strong></p>
+                        <p><strong>@Model.ContactPhone</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-3">
+            <div class="col-md-6">
+                <div class="info-box">
+                    <div class="info-header">Typ zawodów</div>
+                    <div class="info-body">
+                        <p><strong>@Model.CompetitionType</strong></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-box">
+                    <div class="info-header">Liczba miejsc</div>
+                    <div class="info-body">
+                        <p><strong>@Model.RegisteredParticipants / @Model.MaxParticipants</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-md-12">
+                <h3>Opis</h3>
+                <p>@Model.Description</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal do rejestracji drużyny -->
+    <div class="modal fade" id="registerTeamModal" tabindex="-1" aria-labelledby="registerTeamModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="registerTeamModalLabel">Rejestracja drużyny</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" asp-action="RegisterTeamForEvent" asp-route-eventId="@Model.Id">
+                        <div class="form-group">
+                            <label for="teamName">Nazwa drużyny</label>
+                            <input type="text" id="teamName" name="teamName" class="form-control" placeholder="Wprowadź nazwę drużyny" required />
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                            <button type="submit" class="btn btn-primary">Zapisz drużynę</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .event-details-container {
+        margin: 20px;
+        padding: 30px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .event-title {
+        font-size: 3rem;
+        color: #0056b3;
+    }
+
+    .event-subtitle {
+        color: #6c757d;
+        font-weight: bold;
+    }
+
+    .info-box {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .info-header {
+        background-color: #0056b3;
+        color: white;
+        text-align: center;
+        padding: 10px;
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    .info-body {
+        background-color: #e9ecef;
+        padding: 15px;
+        text-align: center;
+        font-size: 1rem;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .btn-primary {
+        background-color: #0056b3;
+        border-color: #004085;
+    }
+
+        .btn-primary:hover,
+        .btn-outline-primary:hover {
+            background-color: #004085;
+            color: white;
+        }
+
+    .btn-outline-primary {
+        color: #0056b3;
+        border-color: #0056b3;
+    }
+</style>

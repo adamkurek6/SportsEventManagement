@@ -1,0 +1,162 @@
+﻿@using SportsEventManagement.ViewModels
+
+@model EventViewModel
+
+@{
+    ViewData["Title"] = "Stwórz Wydarzenie";
+}
+
+<div class="event-form-container">
+    <h2 class="text-center text-primary">Stwórz Wydarzenie</h2>
+
+    <form asp-action="CreateEvent" method="post" class="mt-4">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="Name" class="form-label">Nazwa wydarzenia</label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="Discipline" class="form-label">Dyscyplina</label>
+                    <input asp-for="Discipline" class="form-control" />
+                    <span asp-validation-for="Discipline" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="Location" class="form-label">Lokalizacja</label>
+                    <input asp-for="Location" class="form-control" />
+                    <span asp-validation-for="Location" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="Date" class="form-label">Data wydarzenia</label>
+                    <input asp-for="Date" class="form-control" type="datetime-local" />
+                    <span asp-validation-for="Date" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label asp-for="Description" class="form-label">Opis</label>
+                    <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="RegistrationStart" class="form-label">Data rozpoczęcia rejestracji</label>
+                    <input asp-for="RegistrationStart" class="form-control" type="datetime-local" />
+                    <span asp-validation-for="RegistrationStart" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="RegistrationEnd" class="form-label">Data zakończenia rejestracji</label>
+                    <input asp-for="RegistrationEnd" class="form-control" type="datetime-local" />
+                    <span asp-validation-for="RegistrationEnd" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="ParticipationType" class="form-label">Typ zawodów</label>
+                    <select asp-for="ParticipationType" class="form-select">
+                        <option value="">-- Wybierz --</option>
+                        <option value="Individual">Indywidualny</option>
+                        <option value="Team">Drużynowy</option>
+                    </select>
+                    <span asp-validation-for="ParticipationType" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="Capacity" class="form-label">Maksymalna liczba miejsc</label>
+                    <input asp-for="Capacity" type="number" class="form-control" />
+                    <span asp-validation-for="Capacity" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label asp-for="TeamSize" class="form-label">Liczba osób w drużynie</label>
+                    <input asp-for="TeamSize" type="number" class="form-control" id="TeamSize" />
+                    <span asp-validation-for="TeamSize" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Zapisz</button>
+    </form>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success mt-3">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script>
+        const participationTypeElement = document.querySelector('[name="ParticipationType"]');
+        const teamSizeInput = document.getElementById('TeamSize');
+
+        participationTypeElement.addEventListener('change', function () {
+            if (this.value === "Individual") {
+                teamSizeInput.value = 1;
+                teamSizeInput.readOnly = true;
+            } else {
+                teamSizeInput.value = '';
+                teamSizeInput.readOnly = false;
+            }
+        });
+    </script>
+}
+
+<style>
+    .event-form-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        border-radius: 10px;
+        padding: 30px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-label {
+        font-weight: bold;
+        color: #0056b3;
+    }
+
+    .btn-primary {
+        background-color: #0056b3;
+        border-color: #004085;
+    }
+
+        .btn-primary:hover {
+            background-color: #004085;
+            color: white;
+        }
+
+    textarea {
+        resize: none;
+    }
+</style>
